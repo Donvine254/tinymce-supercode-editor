@@ -67,7 +67,6 @@ tinymce.PluginManager.add("advcodesample", (editor) => {
         dialog.style.backgroundColor = "#fff";
         dialog.style.color = "#2b2b2b";
         dialog.style.borderColor = "#ccc";
-        currentTheme = "vs-dark";
         currentTheme = "vs-light";
       } else {
         monaco.editor.setTheme("vs-dark");
