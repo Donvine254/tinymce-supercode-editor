@@ -24,7 +24,7 @@ let monacoEditor;
 //code for the plugin
 tinymce.PluginManager.add("advcodesample", (editor) => {
   const createCustomDialog = () => {
-    const dialogHTML = `<dialog id="advcodesample" class="modal" style=" width: 90%; height: 90%; background-color: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px; color:#2b2b2b; "> <div style=" display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0; height: fit-content; "> <p style=" font-size: 1.2rem; font-family: inherit; font-weight: bold; margin: 0; line-height: 1; opacity: 0.8; "> Insert Code Sample </p><button id="closeDialog" style=" padding: 0.25rem; cursor: pointer; font-size: 1.5rem; z-index: 50; background-color: transparent; outline: none; border: none; color: currentColor; " title="Close" onmouseenter="this.style.color='#ef4444';" onmouseleave="this.style.color='currentColor';"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 6 6 18" /> <path d="m6 6 12 12" /> </svg> </button> </div><div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; max-width: 100%; padding: 10px; box-shadow: 0 4px 2px -2px rgba(34,47,62,.1),0 8px 8px -4px rgba(34,47,62,.07);" id="editor-header"><div id="editorBtns" style="display:flex; gap:10px; align-items:center;"> <button id="undoBtn" style="background-color:transparent;border:none;" disabled= true><svg viewBox="0 0 21 21" fill="currentColor" height="24" width="24"><g fill="currentColor"><path d="M9 10h6c1.654 0 3 1.346 3 3s-1.346 3-3 3h-3v2h3c2.757 0 5-2.243 5-5s-2.243-5-5-5H9V5L4 9l5 4v-3z" /></g> </svg></button><button id="redoBtn" style="background-color:transparent;border:none;" disabled= true><svg viewBox="0 0 21 21" fill="currentColor" height="24" width="24"><g fill="currentColor"> <path d="M9 18h3v-2H9c-1.654 0-3-1.346-3-3s1.346-3 3-3h6v3l5-4-5-4v3H9c-2.757 0-5 2.243-5 5s2.243 5 5 5z" /></g></svg></button> </div> <div id="select-input"><label for="language" style="font-weight: 400; ">Language:</label> <select id="language" style=" max-width: 50%; min-width:fit-content; font: 14px; padding:0 4px; border:none; outline:none; border-bottom:1px solid #ccc; background-color:transparent; color:currentColor;" onfocus="this.style.borderBottom='1px solid #006ce7';" onblur="this.style.borderBottom='1px solid #ccc';"> ${languages
+    const dialogHTML = `<dialog id="advcodesample" class="modal" style=" width: 90%; height: 90%; background-color: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px; color:#2b2b2b; "> <div style=" display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0; height: fit-content; "> <p style=" font-size: 1.2rem; font-family: inherit; font-weight: bold; margin: 0; line-height: 1; opacity: 0.8; "> Insert Code Sample </p><button id="closeDialog" style=" padding: 0.25rem; cursor: pointer; font-size: 1.5rem; z-index: 50; background-color: transparent; outline: none; border: none; color: currentColor; " title="Close" onmouseenter="this.style.color='#ef4444';" onmouseleave="this.style.color='currentColor';"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M18 6 6 18" /> <path d="m6 6 12 12" /> </svg> </button> </div><div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; max-width: 100%; padding: 10px; box-shadow: 0 4px 2px -2px rgba(34,47,62,.1),0 8px 8px -4px rgba(34,47,62,.07);" id="editor-header"><div id="editorBtns" style="display:flex; gap:10px; align-items:center;"> <button id="undoBtn" disabled=true title="undo"style="background-color:transparent;border:none;cursor:pointer;"><svg viewBox="0 0 21 21" fill="currentColor" height="24" width="24"><g fill="currentColor"><path d="M9 10h6c1.654 0 3 1.346 3 3s-1.346 3-3 3h-3v2h3c2.757 0 5-2.243 5-5s-2.243-5-5-5H9V5L4 9l5 4v-3z" /></g> </svg></button><button id="redoBtn" disabled=true title="redo" style="background-color:transparent;border:none; cursor:pointer;" ><svg viewBox="0 0 21 21" fill="currentColor" height="24" width="24"><g fill="currentColor"> <path d="M9 18h3v-2H9c-1.654 0-3-1.346-3-3s1.346-3 3-3h6v3l5-4-5-4v3H9c-2.757 0-5 2.243-5 5s2.243 5 5 5z" /></g></svg></button> </div> <div id="select-input"><label for="language" style="font-weight: 400; ">Language:</label> <select id="language" style=" max-width: 50%; min-width:fit-content; font: 14px; padding:0 4px; border:none; outline:none; border-bottom:1px solid #ccc; background-color:transparent; color:currentColor;" onfocus="this.style.borderBottom='1px solid #006ce7';" onblur="this.style.borderBottom='1px solid #ccc';"> ${languages
       .map((lang) => `<option value="${lang.value}">${lang.text}</option>`)
       .join(
         ""
@@ -99,6 +99,19 @@ tinymce.PluginManager.add("advcodesample", (editor) => {
     };
 
     //helper functions
+    monacoEditor.onDidChangeModelContent(() => {
+      if (monacoEditor.getModel().canUndo()) {
+        undoBtn.disabled = false;
+      } else {
+        undoBtn.disabled = true;
+      }
+      if (monacoEditor.getModel().canRedo()) {
+        redoBtn.disabled = false;
+      } else {
+        redoBtn.disabled = true;
+      }
+    });
+
     //change themes
     themeBtn.addEventListener("click", toggleTheme);
     //change languages
@@ -124,27 +137,16 @@ tinymce.PluginManager.add("advcodesample", (editor) => {
     });
 
     // Add click event listener for undo button
-    // undoBtn.addEventListener("click", () => {
-    //   const event = new KeyboardEvent("keydown", {
-    //     key: "z",
-    //     code: "90",
-    //     metaKey: true,
-    //     bubbles: true,
-    //   });
-    //   document.dispatchEvent(event);
-    //   console.log(event);
-    // });
-    // redoBtn.addEventListener("click", () => {
-    //   // Simulate Meta+Y key press for redo
-    //   const event = new KeyboardEvent("keydown", {
-    //     key: "y",
-    //     code: "89",
-    //     metaKey: true,
-    //     bubbles: true,
-    //   });
-    //   document.dispatchEvent(event);
-    //   console.log(event);
-    // });
+    undoBtn.addEventListener("click", () => {
+      if (monacoEditor.getModel().canUndo()) {
+        monacoEditor.trigger("keyboard", "undo", null);
+      }
+    });
+    redoBtn.addEventListener("click", () => {
+      if (monacoEditor.getModel().canRedo()) {
+        monacoEditor.trigger("keyboard", "redo", null);
+      }
+    });
     //save code
     document.getElementById("saveBtn").addEventListener("click", () => {
       const codeContent = monacoEditor.getValue().trim();
@@ -188,13 +190,13 @@ tinymce.PluginManager.add("advcodesample", (editor) => {
   );
   editor.ui.registry.addButton("advcodesample", {
     icon: "advcode-sample",
-    tooltip: "Insert/Edit Code Sample",
+    tooltip: "Edit Code Sample",
     shortcut: "meta+Alt+C",
     onAction: showCustomDialog,
   });
   editor.ui.registry.addMenuItem("advcodesample", {
-    text: "Insert/Edit Code Sample",
-    icon: "code-sample",
+    text: "Edit Code Sample",
+    icon: "advcode-sample",
     onAction: showCustomDialog,
   });
 });
